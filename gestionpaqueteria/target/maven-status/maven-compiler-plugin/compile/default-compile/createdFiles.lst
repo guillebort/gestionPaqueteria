@@ -1,0 +1,16 @@
+tienda\ContactoServlet.class
+tienda\ProductoBD.class
+tienda\RegistroServlet.class
+tienda\PedidoBD.class
+tienda\DetallePedidoBD.class
+tienda\UsuarioBD.class
+tienda\ProductoCarrito.class
+tienda\ProcesarPedidoServlet.class
+tienda\LogoutServlet.class
+tienda\AccesoBD.class
+tienda\ProductoServlet.class
+tienda\ConfirmarPedidoServlet.class
+tienda\LoginServlet.class
+tienda\ModificarUsuarioServlet.class
+tienda\CancelarPedidoServlet.class
+tienda\FinalizarPedidoServlet.class

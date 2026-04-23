@@ -1,0 +1,121 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+
+    <welcome-file-list> 
+	    <welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+    <servlet>
+        <servlet-name>UsuarioJSP</servlet-name>
+        <jsp-file>/usuario.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UsuarioJSP</servlet-name>
+        <url-pattern>/usuario.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ProductoServlet</servlet-name>
+        <servlet-class>tienda.ProductoServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ProductoServlet</servlet-name>
+        <url-pattern>/productos.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>tienda.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Registro</servlet-name>
+        <servlet-class>tienda.RegistroServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Registro</servlet-name>
+        <url-pattern>/registro.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>tienda.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/logout.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ModificarUsuarioServlet</servlet-name>
+        <servlet-class>tienda.ModificarUsuarioServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ModificarUsuarioServlet</servlet-name>
+        <url-pattern>/modificarUsuario.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CarritoJSP</servlet-name>
+        <jsp-file>/carrito.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CarritoJSP</servlet-name>
+        <url-pattern>/carrito.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ProcesarPedido</servlet-name>
+        <servlet-class>tienda.ProcesarPedidoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProcesarPedido</servlet-name>
+        <url-pattern>/procesarPedido.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ConfirmarPedido</servlet-name>
+        <servlet-class>tienda.ConfirmarPedidoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConfirmarPedido</servlet-name>
+        <url-pattern>/pedidoCompletado.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FinalizarPedidoServlet</servlet-name>
+        <servlet-class>tienda.FinalizarPedidoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FinalizarPedidoServlet</servlet-name>
+        <url-pattern>/finalizarPedido.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CancelarPedidoServlet</servlet-name>
+        <servlet-class>tienda.CancelarPedidoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CancelarPedidoServlet</servlet-name>
+        <url-pattern>/cancelarPedido.html</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ContactoServlet</servlet-name>
+        <servlet-class>tienda.ContactoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ContactoServlet</servlet-name>
+        <url-pattern>/enviarContacto.html</url-pattern>
+    </servlet-mapping>
+</web-app>
