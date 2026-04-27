@@ -402,3 +402,61 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Función maestra: Le pasas los IDs de los cajones y ella se encarga de todo
+    function activarAutocompletado(idInput, idLista, idLat, idLon) {
+        const inputElement = document.getElementById(idInput);
+        const listaElement = document.getElementById(idLista);
+        let temporizador;
+
+        if (!inputElement) return;
+
+        inputElement.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length < 3) {
+                listaElement.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(temporizador);
+            temporizador = setTimeout(() => {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=es`;
+
+                fetch(url, { headers: { "Accept-Language": "es" } })
+                    .then(response => response.json())
+                    .then(data => {
+                        listaElement.innerHTML = '';
+                        if (data && data.length > 0) {
+                            listaElement.style.display = 'block';
+                            data.forEach(place => {
+                                const li = document.createElement('li');
+                                li.className = 'list-group-item list-group-item-action cursor-pointer';
+                                li.innerHTML = `<strong>${place.display_name.split(',')[0]}</strong> <small class="text-muted d-block">${place.display_name}</small>`;
+                                
+                                li.onclick = function() {
+                                    inputElement.value = place.display_name.split(',')[0];
+                                    document.getElementById(idLat).value = place.lat;
+                                    document.getElementById(idLon).value = place.lon;
+                                    listaElement.style.display = 'none';
+                                };
+                                listaElement.appendChild(li);
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Fallo OSM:", err));
+            }, 500);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!inputElement.contains(e.target) && !listaElement.contains(e.target)) {
+                listaElement.style.display = 'none';
+            }
+        });
+    }
+
+    // Activamos la magia para el Origen y para el Destino
+    activarAutocompletado('input_origen', 'lista_origen', 'lat_origen', 'lon_origen');
+    activarAutocompletado('input_destino', 'lista_destino', 'lat_destino', 'lon_destino');
+});

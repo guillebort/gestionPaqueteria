@@ -1,10 +1,9 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" import="java.util.*, tienda.*" pageEncoding="UTF-8"%>
 <%
-    // Recuperamos la lista usando tu clase ProductoCarrito
+    // Recuperamos los datos de la sesión
     ArrayList<ProductoCarrito> listaCarrito = (ArrayList<ProductoCarrito>) session.getAttribute("carritoJSON");
     Float total = (Float) session.getAttribute("totalPedido");
-    Integer idUsu = (Integer) session.getAttribute("codigo");
-
+    
     if (listaCarrito == null || listaCarrito.isEmpty()) {
         response.sendRedirect("carrito.jsp");
         return;
@@ -16,7 +15,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Checkout Seguro - LogisTFG</title>
+    <title>Pasarela de Pago - LogisTFG</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/estilo.css">
 </head>
@@ -26,87 +25,59 @@
     <mi-menu data-user="<%= session.getAttribute("nombreUsuario") %>"></mi-menu>
 
     <main class="container my-5">
-        <%
-    // Recuperamos el mensaje de error del Servlet si lo hay
-    String mensaje = (String) session.getAttribute("mensaje");
-    if (mensaje != null) {
-        session.removeAttribute("mensaje");
-%>
-    <div class="alert alert-danger text-center shadow-sm fw-bold mb-4">
-        <%= mensaje %>
-    </div>
-<% } %>
-        <div class="row g-5">
-            <div class="col-md-5 col-lg-4 order-md-last">
-                <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-primary">Tu pedido</span>
-                    <span class="badge bg-primary rounded-pill"><%= listaCarrito.size() %></span>
-                </h4>
-                <ul class="list-group mb-3 shadow-sm">
-                    <% 
-                        for (ProductoCarrito p : listaCarrito) { 
-                            float sub = p.getPrecio() * p.getCantidad();
-                    %>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <h6 class="my-0"><%= p.getDescripcion() %></h6>
-                            <small class="text-muted">Cant: <%= p.getCantidad() %> x <%= p.getPrecio() %>€</small>
-                        </div>
-                        <span class="text-muted"><%= String.format(Locale.US, "%.2f", sub) %>€</span>
-                    </li>
-                    <% } %>
-                    <li class="list-group-item d-flex justify-content-between bg-light">
-                        <span>Total (EUR)</span>
-                        <strong class="text-success"><%= String.format(Locale.US, "%.2f", total) %>€</strong>
-                    </li>
-                </ul>
-                <a href="productos.jsp" class="btn btn-outline-secondary w-100">⬅ Seguir comprando</a>
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                
+                <%-- Mensajes de Error --%>
+                <% String mensaje = (String) session.getAttribute("mensaje");
+                   if (mensaje != null) { session.removeAttribute("mensaje"); %>
+                    <div class="alert alert-danger text-center shadow-sm mb-4"><%= mensaje %></div>
+                <% } %>
 
-            <div class="col-md-7 col-lg-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
+                <div class="card shadow border-0">
+                    <%-- Estética de checkout.html: Cabecera Verde --%>
+                    <div class="card-header bg-success text-white text-center py-3">
+                        <h4 class="mb-0">💳 Formalizar Reserva Logística</h4>
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <%-- Resumen del importe (Estilo checkout.html) --%>
+                        <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
+                            <strong>Total a pagar:</strong>
+                            <span class="fs-3 fw-bold"><%= String.format(Locale.US, "%.2f", total) %> €</span>
+                        </div>
+
                         <form action="finalizarPedido.html" method="POST" id="formPago">
                             
-                            <h4 class="mb-4">Confirmación de Envío</h4>
-                            <div class="row g-3">
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">Dirección</label>
-                                    <input type="text" class="form-control" name="direccion" id="input_direccion" autocomplete="off" required>
-                                    <ul id="lista_sugerencias" class="list-group position-absolute w-100 shadow" style="z-index: 1000; display: none;"></ul>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-8 mb-3">
-                                        <label class="form-label">Población</label>
-                                        <input type="text" class="form-control" name="poblacion" id="input_poblacion" required>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Código Postal</label>
-                                        <input type="text" class="form-control" name="cp" id="input_cp" required>
-                                    </div>
-                                </div>
-
-                                <input type="hidden" name="latitud" id="lat_input" value="0.0">
-                                <input type="hidden" name="longitud" id="lon_input" value="0.0">
-
+                            <h5 class="mb-3">Servicios Contratados</h5>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-borderless">
+                                    <% for (ProductoCarrito p : listaCarrito) { %>
+                                        <tr>
+                                            <td><%= p.getDescripcion() %> <span class="text-muted">x<%= p.getCantidad() %></span></td>
+                                            <td class="text-end"><%= String.format(Locale.US, "%.2f", p.getPrecio() * p.getCantidad()) %>€</td>
+                                        </tr>
+                                    <% } %>
+                                </table>
                             </div>
 
                             <hr class="my-4">
+
+                            <h5 class="mb-3">Método de Pago</h5>
                             
-                            <h4 class="mb-3">Información de Pago</h4>
-                            
+                            <%-- Selector de Tarjetas Guardadas --%>
                             <% if (misTarjetas != null && !misTarjetas.isEmpty()) { %>
-                                <div class="mb-4 p-3 border rounded bg-light border-primary">
-                                    <label class="form-label fw-bold text-primary">💳 Mis tarjetas guardadas</label>
-                                    <select class="form-select" name="tarjetaGuardada" id="tarjetaGuardada">
-                                        <option value="NUEVA">➕ Usar una tarjeta nueva...</option>
+                                <div class="mb-4 p-3 border rounded bg-light border-success">
+                                    <label class="form-label fw-bold text-success">Usar una de mis tarjetas:</label>
+                                    <select class="form-select border-success" name="tarjetaGuardada" id="tarjetaGuardada">
+                                        <option value="NUEVA">➕ Añadir nueva tarjeta...</option>
                                         <% for (TarjetaBD t : misTarjetas) { %>
                                             <option value="<%= t.getId() %>" 
                                                     data-numero="<%= t.getNumero() %>" 
                                                     data-titular="<%= t.getTitular() %>" 
                                                     data-caducidad="<%= t.getCaducidad() %>">
-                                                <%= t.getNumeroOculto() %> - <%= t.getTitular() %>
+                                                <%= t.getNumeroOculto() %> (<%= t.getTitular() %>)
                                             </option>
                                         <% } %>
                                     </select>
@@ -115,41 +86,46 @@
 
                             <div id="seccionNuevaTarjeta">
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Nº Tarjeta</label>
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label">Titular de la tarjeta</label>
+                                        <input type="text" class="form-control" name="titularTarjeta" id="titularTarjeta" placeholder="Nombre completo">
+                                    </div>
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label">Número de tarjeta</label>
                                         <input type="text" class="form-control" name="numeroTarjeta" id="numeroTarjeta" placeholder="0000 0000 0000 0000" maxlength="19">
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Titular</label>
-                                        <input type="text" class="form-control" name="titularTarjeta" id="titularTarjeta" placeholder="Titular de la tarjeta">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Expiración</label>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Fecha de Caducidad</label>
                                         <input type="text" class="form-control" name="caducidadTarjeta" id="caducidadTarjeta" placeholder="MM/AAAA" maxlength="7">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">CVV</label>
-                                        <input type="text" class="form-control" placeholder="123" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        <input type="text" class="form-control" placeholder="123" maxlength="3">
                                     </div>
                                 </div>
 
-                                <div class="form-check mt-3">
+                                <div class="form-check mt-2">
                                     <input class="form-check-input" type="checkbox" name="guardarTarjetaCheck" value="SI" id="guardarCheck">
                                     <label class="form-check-label text-success" for="guardarCheck">
-                                        <strong>Guardar esta tarjeta para mis próximas compras</strong>
+                                        <strong>Guardar tarjeta para futuros pedidos</strong>
                                     </label>
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-2 mt-5">
-                                <button type="submit" onclick="localStorage.clear();" class="btn btn-success btn-lg">
-                                    Confirmar y Pagar <%= String.format(Locale.US, "%.2f", total) %>€
+                            <div class="d-flex justify-content-between align-items-center mt-5">
+                                <a href="datosEnvio.jsp" class="text-muted text-decoration-none">← Volver a ruta</a>
+                                <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                    Pagar y Confirmar Pedido 🔒
                                 </button>
                             </div>
 
                         </form>
                     </div>
                 </div>
+                
+                <p class="text-center text-muted mt-4 small">
+                    Pago seguro procesado por LogisTFG. Tus datos están cifrados.
+                </p>
             </div>
         </div>
     </main>
@@ -158,6 +134,5 @@
 
     <script src="js/mis-etiquetas.js"></script>
     <script src="js/logica.js?v=<%= System.currentTimeMillis() %>"></script>
-
 </body>
 </html>

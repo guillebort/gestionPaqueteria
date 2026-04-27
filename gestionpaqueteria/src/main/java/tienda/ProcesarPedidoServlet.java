@@ -77,7 +77,7 @@ public class ProcesarPedidoServlet extends HttpServlet {
 
             if (codigoUsuario == null || codigoUsuario <= 0) {
                 // Si no está logueado, lo mandamos al login y que luego vuelva al proceso
-                urlDestino = "loginTienda.jsp?url=finalizarPedido.html";
+                urlDestino = "loginTienda.jsp?url=datosEnvio.jsp";
             } else {
                 // Si está logueado, lo mandamos al Servlet de Finalizar (para que cargue las tarjetas)
                 urlDestino = "datosEnvio.jsp";

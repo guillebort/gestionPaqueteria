@@ -5,11 +5,12 @@ tienda\PedidoBD.class
 tienda\DetallePedidoBD.class
 tienda\UsuarioBD.class
 tienda\ProductoCarrito.class
+tienda\Direccion.class
+tienda\GuardarRutaServlet.class
 tienda\ProcesarPedidoServlet.class
 tienda\LogoutServlet.class
 tienda\AccesoBD.class
 tienda\ProductoServlet.class
-tienda\ConfirmarPedidoServlet.class
 tienda\LoginServlet.class
 tienda\ModificarUsuarioServlet.class
 tienda\TarjetaBD.class

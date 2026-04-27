@@ -2,7 +2,6 @@ c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\sr
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\TarjetaBD.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\LogoutServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\AccesoBD.java
-c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\ConfirmarPedidoServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\FinalizarPedidoServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\DetallePedidoBD.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\ProductoBD.java
@@ -11,6 +10,8 @@ c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\sr
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\ProcesarPedidoServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\ProductoServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\CancelarPedidoServlet.java
+c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\Direccion.java
+c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\GuardarRutaServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\UsuarioBD.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\LoginServlet.java
 c:\Users\guill\Desktop\I.Telematica\4\TFG\gestionPaqueteria\gestionpaqueteria\src\main\java\tienda\PedidoBD.java

@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="col-md-7">
                                     <label class="form-label small fw-bold">Correo Electrónico</label>
-                                    <input type="email" class="form-control bg-light" value="<%= u.getUsuario() %>" required>
+                                    <input type="email" class="form-control bg-light" value="<%= u.getUsuario() %>" readonly>
                                 </div>
                                 <div class="col-md-5">
                                     <label class="form-label small fw-bold">Teléfono</label>
