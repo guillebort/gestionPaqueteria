@@ -1,4 +1,12 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" import="tienda.*, java.util.*" pageEncoding="UTF-8"%>
+<%
+    // REDIRECCIÓN MAESTRA: Si no está logueado, lo mandamos al login nuevo.
+    Integer codigoLogueado = (Integer) session.getAttribute("codigo");
+    if (codigoLogueado == null || codigoLogueado <= 0) {
+        response.sendRedirect("login.html");
+        return; // Cortamos la ejecución de esta página
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,7 +21,6 @@
     
     <mi-cabecera></mi-cabecera>
     
-    <%-- AQUÍ LA SOLUCIÓN: Sacamos el nombre con Java puro y se lo damos al menú --%>
     <% 
         String nombreMenu = (String) session.getAttribute("nombreUsuario"); 
         String nombreData = (nombreMenu != null) ? nombreMenu : "";
@@ -23,68 +30,22 @@
     <main class="container my-5">
         <%
             try {
-                Integer codigoLogueado = (Integer) session.getAttribute("codigo");
                 String mensaje = (String) session.getAttribute("mensaje");
                 if (mensaje != null) {
                     session.removeAttribute("mensaje");
         %>
             <div class="alert alert-info text-center"><%= mensaje %></div>
-        <%      } %>
+        <%      } 
 
-        <%      if (codigoLogueado == null || codigoLogueado <= 0) { %>
-            
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-5">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white text-center py-3">
-                            <h3 class="mb-0">Identificación de Usuario</h3>
-                        </div>
-                        <div class="card-body p-4">
-                            <form action="login.html" method="POST">
-                                <input type="hidden" name="url" value="usuario.jsp">
-                                <div class="d-flex justify-content-center mb-4">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="tipoAcceso" id="radioAcceso" value="Acceso" checked onchange="cambiarModoUsuario()">
-                                        <label class="form-check-label" for="radioAcceso">Acceso</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="tipoAcceso" id="radioRegistro" value="Registro" onchange="cambiarModoUsuario()">
-                                        <label class="form-check-label" for="radioRegistro">Registro</label>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">👤 Usuario / Email</label>
-                                    <input type="email" class="form-control" name="usuario" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">🔑 Contraseña</label>
-                                    <input type="password" class="form-control" name="clave" required>
-                                </div>
-                                <div id="campos_registro" class="d-none">
-                                    <hr>
-                                    <h5 class="mb-3 text-secondary">Datos de facturación</h5>
-                                    <div class="mb-3"><input type="text" class="form-control" name="nombre" placeholder="Nombre"></div>
-                                    <div class="mb-3"><input type="text" class="form-control" name="domicilio" placeholder="Dirección"></div>
-                                    <div class="mb-4"><input type="tel" class="form-control" name="telefono" placeholder="Teléfono"></div>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-success" id="btn_submit">Entrar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        <%      } else { 
-                    AccesoBD con = AccesoBD.getInstance();
-                    UsuarioBD u = con.obtenerUsuarioBD(codigoLogueado);
-                    
-                    if (u == null) {
-                        out.println("<div class='alert alert-danger text-center'>Error: Perfil no encontrado. <a href='logout.html'>Cerrar sesión</a></div>");
-                    } else {
-                        // AQUÍ LA MAGIA: Llamamos a la función que cruza las 4 tablas
-                        ArrayList<PedidoBD> historial = con.obtenerHistorialDetallado(codigoLogueado);
+                // Como ya sabemos que está logueado, cargamos sus datos directamente
+                AccesoBD con = AccesoBD.getInstance();
+                UsuarioBD u = con.obtenerUsuarioBD(codigoLogueado);
+                
+                if (u == null) {
+                    out.println("<div class='alert alert-danger text-center'>Error: Perfil no encontrado. <a href='logout.html'>Cerrar sesión</a></div>");
+                } else {
+                    // AQUÍ LA MAGIA: Llamamos a la función que cruza las 4 tablas
+                    ArrayList<PedidoBD> historial = con.obtenerHistorialDetallado(codigoLogueado);
         %>
             
             <div class="row justify-content-center mb-5">
@@ -220,8 +181,7 @@
                 <%  } %>
             </div>
 
-        <%          }
-                } 
+        <%      } 
             } catch (Exception e) {
                 out.println("<div class='alert alert-danger mt-5 p-4'><h4>⚠️ Error detectado</h4><p>" + e.getMessage() + "</p></div>");
             }

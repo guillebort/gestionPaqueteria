@@ -16,87 +16,40 @@
 
     <main class="container my-5">
         <%
-            // Mostramos errores si el LoginServlet nos devuelve alguno
             String mensaje = (String) session.getAttribute("mensaje");
             if (mensaje != null) {
                 session.removeAttribute("mensaje");
         %>
-            <div class="alert alert-danger text-center mx-auto" style="max-width: 600px;"><%= mensaje %></div>
+            <div class="alert alert-danger text-center mx-auto" style="max-width: 500px;"><%= mensaje %></div>
         <% } %>
 
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white text-center py-3">
-                        <h3 class="mb-0">Identificación de Usuario</h3>
+            <div class="col-md-5">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-dark text-white text-center py-3">
+                        <h4 class="mb-0">Acceso de Clientes</h4>
                     </div>
                     <div class="card-body p-4">
-                        
-                        <form action="login.html" method="POST">
-                            <input type="hidden" name="url" value="usuario.jsp">
+                        <form method="post" action="login.html">
+                            <input type="hidden" name="url" value="usuario.html">
+                            <input type="hidden" name="tipoAcceso" value="Acceso">
                             
-                            <div class="d-flex justify-content-center mb-4">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="tipoAcceso" id="radioAcceso" value="Acceso" checked onchange="cambiarModoUsuario()">
-                                    <label class="form-check-label" for="radioAcceso">Acceso</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="tipoAcceso" id="radioRegistro" value="Registro" onchange="cambiarModoUsuario()">
-                                    <label class="form-check-label" for="radioRegistro">Registro</label>
-                                </div>
-                            </div>
-
                             <div class="mb-3">
-                                <label for="usuario_email" class="form-label">👤 Usuario / Email</label>
-                                <input type="email" class="form-control" id="usuario_email" name="usuario" required placeholder="correo@ejemplo.com">
+                                <label class="form-label fw-bold text-secondary">Email / Usuario</label>
+                                <input name="usuario" type="email" class="form-control form-control-lg" required placeholder="tu@email.com"/>
                             </div>
-                            <div class="mb-3">
-                                <label for="usuario_pass" class="form-label">🔑 Contraseña</label>
-                                <input type="password" class="form-control" id="usuario_pass" name="clave" required minlength="4" placeholder="Mínimo 4 caracteres">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Contraseña</label>
+                                <input name="clave" type="password" class="form-control form-control-lg" required placeholder="••••••••"/>
                             </div>
-
-                            <div id="campos_registro" class="d-none">
-                                <hr>
-                                <h5 class="mb-3 text-secondary">Datos del usuario</h5>
-                                <div class="row">
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" name="nombre">
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Apellidos</label>
-                                        <input type="text" class="form-control" name="apellidos">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Dirección Principal</label>
-                                    <input type="text" class="form-control" name="domicilio">
-                                </div>
-                                <div class="row">
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Población</label>
-                                        <input type="text" class="form-control" name="poblacion">
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Provincia</label>
-                                        <input type="text" class="form-control" name="provincia">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4 mb-4">
-                                        <label class="form-label">C.P.</label>
-                                        <input type="text" class="form-control" name="cp">
-                                    </div>
-                                    <div class="col-8 mb-4">
-                                        <label class="form-label">Teléfono</label>
-                                        <input type="tel" class="form-control" name="telefono">
-                                    </div>
-                                </div>
-                            </div>
-
+                            
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success" id="btn_submit">Entrar</button>
-                                <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                                <button type="submit" class="btn btn-dark btn-lg shadow-sm">Entrar al Panel</button>
+                                
+                                <hr class="my-4">
+                                
+                                <p class="text-center text-muted small">¿Eres nuevo en LogisTFG?</p>
+                                <a href="registroUsuario.jsp" class="btn btn-outline-dark">Crear mi cuenta</a>
                             </div>
                         </form>
                     </div>

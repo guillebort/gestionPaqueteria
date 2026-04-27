@@ -56,10 +56,8 @@
 
                         <button class="btn btn-outline-secondary" onclick="vaciarCarrito()">Vaciar Cesta</button>
 
-                        <button class="btn btn-success btn-lg px-5" onclick="EnviarCarrito('procesarPedido.jsp', carrito)">
-
+                        <button class="btn btn-success btn-lg px-5" onclick="EnviarCarrito('procesarPedido.html', carrito)">
                             Formalizar Pedido ➔
-
                         </button>
 
                     </div> 

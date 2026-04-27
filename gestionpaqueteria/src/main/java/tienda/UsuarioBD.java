@@ -1,7 +1,7 @@
 package tienda;
 
 public class UsuarioBD {
-    private int codigo;
+    private int codigo, rol;
     private String usuario, nombre, apellidos, domicilio, poblacion, provincia, cp, telefono;
 
     public int getCodigo() { return codigo; }
@@ -22,4 +22,6 @@ public class UsuarioBD {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
+    public int getRol() { return rol; }
+    public void setRol(int rol) { this.rol = rol; }
 }

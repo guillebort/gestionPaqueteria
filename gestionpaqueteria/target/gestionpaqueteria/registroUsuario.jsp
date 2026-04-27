@@ -20,7 +20,14 @@
                         <h4>Registro de Nuevo Cliente</h4>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="registroUsuario.html" onsubmit="return verificarPasswords()">
+                        <form method="post" action="registro.html" onsubmit="return verificarPasswords()">
+                        <% 
+                            // Recogemos la ruta por si viene de comprar en la tienda
+                            String urlDest = request.getParameter("url"); 
+                            if(urlDest != null) { 
+                        %>
+                            <input type="hidden" name="url" value="<%= urlDest %>">
+                        <% } %>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label>Nombre:</label>
@@ -79,7 +86,7 @@
 
                             <div class="d-grid gap-2 mt-4">
                                 <button type="submit" class="btn btn-success btn-lg">Crear Cuenta</button>
-                                <a href="loginUsuario.jsp" class="btn btn-outline-secondary">Cancelar y volver</a>
+                                <a href="login.html" class="btn btn-outline-secondary">Cancelar y volver</a>
                             </div>
                         </form>
                     </div>

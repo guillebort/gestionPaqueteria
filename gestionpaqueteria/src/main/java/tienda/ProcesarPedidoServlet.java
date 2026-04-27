@@ -65,27 +65,29 @@ public class ProcesarPedidoServlet extends HttpServlet {
         }
 
         // 3. PROCESAMOS EL DESTINO SEGÚN EL LOGIN
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         if (carritoJSON.size() > 0) {
-            // Guardamos el carrito y el total en la sesión (ya están a salvo)
             sesion.setAttribute("carritoJSON", carritoJSON);
             sesion.setAttribute("totalPedido", totalPedido);
 
-            // AHORA comprobamos la seguridad
             Integer codigoUsuario = (Integer) sesion.getAttribute("codigo");
+            String urlDestino;
 
             if (codigoUsuario == null || codigoUsuario <= 0) {
-                // NO ESTÁ LOGUEADO: Lo mandamos al login, pero con el billete directo a la pasarela
-                response.sendRedirect("loginTienda.jsp?url=procesarPedido.jsp");
+                // Si no está logueado, lo mandamos al login y que luego vuelva al proceso
+                urlDestino = "loginTienda.jsp?url=finalizarPedido.html";
             } else {
-                // SÍ ESTÁ LOGUEADO: Pasa directo a formalizar el pedido
-                RequestDispatcher rd = request.getRequestDispatcher("procesarPedido.jsp");
-                rd.forward(request, response);
+                // Si está logueado, lo mandamos al Servlet de Finalizar (para que cargue las tarjetas)
+                urlDestino = "datosEnvio.jsp";
             }
             
+            // Devolvemos el JSON que el JS espera leer
+            response.getWriter().write("{\"status\": \"ok\", \"redirect\": \"" + urlDestino + "\"}");
+
         } else {
-            // Si llega vacío o no había stock de nada
-            sesion.setAttribute("mensaje", "⚠️ No se ha podido procesar el pedido por falta de stock.");
-            response.sendRedirect("procesarPedido.jsp");
+            response.getWriter().write("{\"status\": \"error\", \"message\": \"Carrito vacío o sin stock.\"}");
         }
     }
 }

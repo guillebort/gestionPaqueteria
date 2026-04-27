@@ -120,7 +120,7 @@ public class AccesoBD {
             // Encriptamos la clave antes de mandarla a MariaDB
             String claveSegura = encriptarSHA1(clave);
             
-            String sql = "INSERT INTO usuarios (usuario, clave, nombre, apellidos, domicilio, poblacion, provincia, cp, telefono, activo, admin) "
+            String sql = "INSERT INTO usuarios (usuario, clave, nombre, apellidos, domicilio, poblacion, provincia, cp, telefono, activo, rol) "
                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)";
             PreparedStatement s = conexionBD.prepareStatement(sql);
             s.setString(1, usuario);
@@ -160,6 +160,7 @@ public class AccesoBD {
             u.setProvincia(rs.getString("provincia"));
             u.setCp(rs.getString("cp"));
             u.setTelefono(rs.getString("telefono"));
+            u.setRol(rs.getInt("rol"));
         }
     } catch (Exception e) { e.printStackTrace(); }
 		return u;
@@ -223,34 +224,47 @@ public class AccesoBD {
     }
 
     // FUNCIÓN ADAPTADA A INT (Devuelve el ID del pedido o -1 si falla)
-    public int guardarPedidoCompleto(int idUsuario, float importeTotal, java.util.ArrayList<ProductoCarrito> carrito) {
+    public int guardarPedidoCompleto(int idUsuario, float importeTotal, java.util.ArrayList<ProductoCarrito> carrito, 
+                                     Direccion dirOrigen, double latO, double lonO, 
+                                     Direccion dirDestino, double latD, double lonD) {
         abrirConexionBD();
         try {
-            // 1. Iniciamos la transacción segura
+            // 1. Iniciamos la transacción segura (Cualquier fallo deshace TODO)
             conexionBD.setAutoCommit(false);
 
-            // 2. Insertamos el pedido. 
-            String sqlPedido = "INSERT INTO pedidos (persona, fecha, importe, estado) VALUES (?, CURDATE(), ?, 1)";
+            // 2. Insertamos las dos direcciones PRIMERO y guardamos sus IDs
+            int idOrigen = insertarDireccion( dirOrigen, latO, lonO);
+            int idDestino = insertarDireccion( dirDestino, latD, lonD);
+
+            // Si alguna dirección falló (devuelve -1), forzamos una excepción para cancelar todo
+            if (idOrigen == -1 || idDestino == -1) {
+                throw new java.sql.SQLException("Fallo al generar los IDs de las direcciones.");
+            }
+
+            // 3. Insertamos el pedido usando las Claves Foráneas de las direcciones
+            String sqlPedido = "INSERT INTO pedidos (persona, fecha, importe, estado, id_direccion_origen, id_direccion_destino) VALUES (?, CURDATE(), ?, 1, ?, ?)";
             java.sql.PreparedStatement psPedido = conexionBD.prepareStatement(sqlPedido, java.sql.Statement.RETURN_GENERATED_KEYS);
             psPedido.setInt(1, idUsuario);
             psPedido.setFloat(2, importeTotal);
+            psPedido.setInt(3, idOrigen);
+            psPedido.setInt(4, idDestino);
             psPedido.executeUpdate();
 
-            // 3. Recuperamos el 'id' que se acaba de generar para este pedido
+            // 4. Recuperamos el 'id' que se acaba de generar para este pedido
             java.sql.ResultSet rs = psPedido.getGeneratedKeys();
             int idPedido = 0;
             if (rs.next()) {
                 idPedido = rs.getInt(1);
             }
 
-            // 4. Preparamos los INSERTS del detalle y los UPDATES del stock
+            // 5. Preparamos los INSERTS del detalle y los UPDATES del stock (TU CÓDIGO INTACTO)
             String sqlDetalle = "INSERT INTO detalle (id_pedido, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
             java.sql.PreparedStatement psDetalle = conexionBD.prepareStatement(sqlDetalle);
 
             String sqlStock = "UPDATE productos SET existencias = existencias - ? WHERE id = ?";
             java.sql.PreparedStatement psStock = conexionBD.prepareStatement(sqlStock);
 
-            // 5. Recorremos el carrito para guardar los detalles
+            // 6. Recorremos el carrito para guardar los detalles
             for (ProductoCarrito p : carrito) {
                 psDetalle.setInt(1, idPedido);
                 psDetalle.setInt(2, p.getCodigo()); 
@@ -263,22 +277,22 @@ public class AccesoBD {
                 psStock.executeUpdate();
             }
 
-            // 6. Si todo el bucle va bien, guardamos definitivamente en MariaDB
+            // 7. Si todo el bucle va bien, guardamos definitivamente en MariaDB
             conexionBD.commit();
             
-            // 🚀 CAMBIO 1: Devolvemos el ID del pedido (ej. 45) en lugar de 'true'
+            // Devolvemos el ID del pedido
             return idPedido;
 
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                // Si explota algo, hacemos ROLLBACK (deshacer)
+                // Si explota algo, hacemos ROLLBACK (deshace el pedido, el detalle, el stock ¡Y las direcciones!)
                 if (conexionBD != null) conexionBD.rollback();
             } catch (java.sql.SQLException ex) {
                 ex.printStackTrace();
             }
             
-            // 🚀 CAMBIO 2: Devolvemos -1 indicando que hubo un error en lugar de 'false'
+            // Devolvemos -1 indicando que hubo un error
             return -1;
             
         } finally {
@@ -480,4 +494,82 @@ public class AccesoBD {
         return listaTarjetas;
     }
 
+    private int insertarDireccion(String direccion, double lat, double lon) {
+        abrirConexionBD();
+    int idGenerado = -1;
+    try {
+        String sql = "INSERT INTO direcciones (direccion, latitud, longitud) VALUES (?, ?, ?)";
+        PreparedStatement ps = conexionBD.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        
+        ps.setString(1, direccion != null ? direccion : "No especificado");
+        ps.setDouble(2, lat);
+        ps.setDouble(3, lon);
+        
+        ps.executeUpdate();
+        
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            idGenerado = rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        System.out.println("❌ Error guardando dirección: " + e.getMessage());
+    }
+    return idGenerado;
+    }
+
+    public java.util.ArrayList<Pedido> obtenerPedidosUsuario(int idUsuario) {
+    java.util.ArrayList<Pedido> listaPedidos = new java.util.ArrayList<>();
+    abrirConexionBD();
+    
+    try {
+        // 1. La consulta SQL con LEFT JOIN para traer los datos del pedido + origen + destino
+        String sql = "SELECT p.id, p.fecha, p.importe, p.estado, " +
+                     "dir_o.id_direccion AS id_origen, dir_o.direccion AS txt_origen, dir_o.latitud AS lat_origen, dir_o.longitud AS lon_origen, " +
+                     "dir_d.id_direccion AS id_destino, dir_d.direccion AS txt_destino, dir_d.latitud AS lat_destino, dir_d.longitud AS lon_destino " +
+                     "FROM pedidos p " +
+                     "LEFT JOIN direcciones dir_o ON p.id_direccion_origen = dir_o.id_direccion " +
+                     "LEFT JOIN direcciones dir_d ON p.id_direccion_destino = dir_d.id_direccion " +
+                     "WHERE p.persona = ? " +
+                     "ORDER BY p.fecha DESC";
+                     
+        java.sql.PreparedStatement ps = conexionBD.prepareStatement(sql);
+        ps.setInt(1, idUsuario);
+        java.sql.ResultSet rs = ps.executeQuery();
+
+        // 2. Recorremos los resultados y montamos los objetos
+        while (rs.next()) {
+            PedidoBD p = new PedidoBD();
+            p.setId(rs.getInt("id"));
+            p.setFecha(rs.getDate("fecha"));
+            p.setImporteTotal(rs.getFloat("importe"));
+            p.setEstado(rs.getInt("estado"));
+            
+            // 3. Fabricamos el objeto Dirección para el ORIGEN
+            Direccion origen = new Direccion();
+            origen.setId(rs.getInt("id_origen"));
+            origen.setTextoDireccion(rs.getString("txt_origen"));
+            origen.setLatitud(rs.getDouble("lat_origen"));
+            origen.setLongitud(rs.getDouble("lon_origen"));
+            p.setOrigen(origen); // Se lo enganchamos al pedido
+            
+            // 4. Fabricamos el objeto Dirección para el DESTINO
+            Direccion destino = new Direccion();
+            destino.setId(rs.getInt("id_destino"));
+            destino.setTextoDireccion(rs.getString("txt_destino"));
+            destino.setLatitud(rs.getDouble("lat_destino"));
+            destino.setLongitud(rs.getDouble("lon_destino"));
+            p.setDestino(destino); // Se lo enganchamos al pedido
+            
+            // 5. Añadimos el pedido completo a la lista
+            listaPedidos.add(p);
+        }
+    } catch (Exception e) {
+        System.out.println("❌ ERROR leyendo pedidos: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        // Cierra los recursos si es necesario según tu estructura
+    }
+    
+    return listaPedidos;
+}
 }

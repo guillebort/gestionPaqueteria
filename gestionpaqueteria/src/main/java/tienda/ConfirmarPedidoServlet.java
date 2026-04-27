@@ -29,8 +29,20 @@ public class ConfirmarPedidoServlet extends HttpServlet {
         }
 
         // Llamamos directamente a la BD sin recoger parámetros innecesarios del formulario
+        Double lat = null, lon = null;
+        try {
+            String sLat = request.getParameter("latitud");
+            String sLon = request.getParameter("longitud");
+            if (sLat != null && !sLat.isEmpty()) lat = Double.parseDouble(sLat);
+            if (sLon != null && !sLon.isEmpty()) lon = Double.parseDouble(sLon);
+        } catch (Exception e) { 
+            System.out.println("Aviso: No se han recibido coordenadas en ConfirmarPedido."); 
+        }
+
         AccesoBD con = AccesoBD.getInstance();
-        int exito = con.guardarPedidoCompleto(codigoUsuario, total, carrito);
+            
+        // --- CAMBIO CLAVE: Ahora pasamos 5 parámetros ---
+        int exito = con.guardarPedidoCompleto(codigoUsuario, total, carrito, lat, lon);
 
         if (exito != -1) {
             // BORRAMOS EL CARRITO DE LA SESIÓN DE JAVA PORQUE YA ESTÁ COMPRADO

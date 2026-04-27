@@ -17,7 +17,6 @@ public class RegistroServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         
         String usuario = request.getParameter("usuario");
-        String clave = request.getParameter("clave");
         String nombre = request.getParameter("nombre");
         String apellidos = request.getParameter("apellidos");
         String domicilio = request.getParameter("domicilio");
@@ -25,6 +24,15 @@ public class RegistroServlet extends HttpServlet {
         String provincia = request.getParameter("provincia");
         String cp = request.getParameter("cp");
         String telefono = request.getParameter("telefono");
+
+        String clave = request.getParameter("clave");
+        String clave2 = request.getParameter("clave2");
+
+        if (!clave.equals(clave2)) {
+            // Redirigir de vuelta al formulario de registro con un mensaje de error
+            response.sendRedirect("registro.jsp?error=Las contraseñas no coinciden");
+            return; // Importante para detener la ejecución
+        }
 
         AccesoBD con = AccesoBD.getInstance();
         

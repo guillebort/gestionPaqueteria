@@ -12,5 +12,6 @@ tienda\ProductoServlet.class
 tienda\ConfirmarPedidoServlet.class
 tienda\LoginServlet.class
 tienda\ModificarUsuarioServlet.class
+tienda\TarjetaBD.class
 tienda\CancelarPedidoServlet.class
 tienda\FinalizarPedidoServlet.class

@@ -340,3 +340,123 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 });
+document.addEventListener("DOMContentLoaded", function() {
+    const inputDireccion = document.getElementById('input_direccion');
+    const listaSugerencias = document.getElementById('lista_sugerencias');
+    let temporizador;
+
+    if (inputDireccion) {
+        inputDireccion.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length < 3) {
+                listaSugerencias.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(temporizador);
+            temporizador = setTimeout(() => {
+                // CAMBIO A NOMINATIM: Más estable y sin bloqueos raros
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=es`;
+
+                fetch(url, { headers: { "Accept-Language": "es" } })
+                    .then(response => response.json())
+                    .then(data => {
+                        listaSugerencias.innerHTML = '';
+                        if (data && data.length > 0) {
+                            listaSugerencias.style.display = 'block';
+                            data.forEach(place => {
+                                const li = document.createElement('li');
+                                li.className = 'list-group-item list-group-item-action';
+                                li.style.cursor = 'pointer';
+                                
+                                // Nombre más descriptivo
+                                li.innerHTML = `<strong>${place.display_name.split(',')[0]}</strong> <small class="text-muted d-block">${place.display_name}</small>`;
+                                
+                                li.onclick = function() {
+                                    // 1. Ponemos el nombre de la calle
+                                    inputDireccion.value = place.display_name.split(',')[0];
+                                    
+                                    // 2. Extraemos datos de la dirección de Nominatim
+                                    const addr = place.address;
+                                    const ciudad = addr.city || addr.town || addr.village || addr.municipality || "";
+                                    const codigoPostal = addr.postcode || ""; // Aquí pillamos el CP
+
+                                    // 3. Rellenamos los inputs del formulario
+                                    if(document.getElementById('input_poblacion')) document.getElementById('input_poblacion').value = ciudad;
+                                    if(document.getElementById('input_cp')) document.getElementById('input_cp').value = codigoPostal;
+                                    
+                                    // 4. Guardamos las coordenadas (Crucial para que Java no explote)
+                                    if(document.getElementById('lat_input')) document.getElementById('lat_input').value = place.lat;
+                                    if(document.getElementById('lon_input')) document.getElementById('lon_input').value = place.lon;
+                                    
+                                    console.log("Datos cargados: ", ciudad, codigoPostal, place.lat, place.lon);
+
+                                    listaSugerencias.style.display = 'none';
+};
+                                listaSugerencias.appendChild(li);
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Fallo en red OSM:", err));
+            }, 500); // Un poco más de margen
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Función maestra: Le pasas los IDs de los cajones y ella se encarga de todo
+    function activarAutocompletado(idInput, idLista, idLat, idLon) {
+        const inputElement = document.getElementById(idInput);
+        const listaElement = document.getElementById(idLista);
+        let temporizador;
+
+        if (!inputElement) return;
+
+        inputElement.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length < 3) {
+                listaElement.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(temporizador);
+            temporizador = setTimeout(() => {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=es`;
+
+                fetch(url, { headers: { "Accept-Language": "es" } })
+                    .then(response => response.json())
+                    .then(data => {
+                        listaElement.innerHTML = '';
+                        if (data && data.length > 0) {
+                            listaElement.style.display = 'block';
+                            data.forEach(place => {
+                                const li = document.createElement('li');
+                                li.className = 'list-group-item list-group-item-action cursor-pointer';
+                                li.innerHTML = `<strong>${place.display_name.split(',')[0]}</strong> <small class="text-muted d-block">${place.display_name}</small>`;
+                                
+                                li.onclick = function() {
+                                    inputElement.value = place.display_name.split(',')[0];
+                                    document.getElementById(idLat).value = place.lat;
+                                    document.getElementById(idLon).value = place.lon;
+                                    listaElement.style.display = 'none';
+                                };
+                                listaElement.appendChild(li);
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Fallo OSM:", err));
+            }, 500);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!inputElement.contains(e.target) && !listaElement.contains(e.target)) {
+                listaElement.style.display = 'none';
+            }
+        });
+    }
+
+    // Activamos la magia para el Origen y para el Destino
+    activarAutocompletado('input_origen', 'lista_origen', 'lat_origen', 'lon_origen');
+    activarAutocompletado('input_destino', 'lista_destino', 'lat_destino', 'lon_destino');
+});

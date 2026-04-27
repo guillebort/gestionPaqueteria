@@ -26,6 +26,16 @@
     <mi-menu data-user="<%= session.getAttribute("nombreUsuario") %>"></mi-menu>
 
     <main class="container my-5">
+        <%
+    // Recuperamos el mensaje de error del Servlet si lo hay
+    String mensaje = (String) session.getAttribute("mensaje");
+    if (mensaje != null) {
+        session.removeAttribute("mensaje");
+%>
+    <div class="alert alert-danger text-center shadow-sm fw-bold mb-4">
+        <%= mensaje %>
+    </div>
+<% } %>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -60,18 +70,26 @@
                             
                             <h4 class="mb-4">Confirmación de Envío</h4>
                             <div class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label">Dirección de entrega</label>
-                                    <input type="text" class="form-control" name="direccion" required>
+                                <div class="mb-3 position-relative">
+                                    <label class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" name="direccion" id="input_direccion" autocomplete="off" required>
+                                    <ul id="lista_sugerencias" class="list-group position-absolute w-100 shadow" style="z-index: 1000; display: none;"></ul>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Ciudad</label>
-                                    <input type="text" class="form-control" name="poblacion" required>
+
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Población</label>
+                                        <input type="text" class="form-control" name="poblacion" id="input_poblacion" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" name="cp" id="input_cp" required>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Código Postal</label>
-                                    <input type="text" class="form-control" name="cp" required>
-                                </div>
+
+                                <input type="hidden" name="latitud" id="lat_input" value="0.0">
+                                <input type="hidden" name="longitud" id="lon_input" value="0.0">
+
                             </div>
 
                             <hr class="my-4">
@@ -139,7 +157,7 @@
     <mi-pie></mi-pie>
 
     <script src="js/mis-etiquetas.js"></script>
-    <script src="js/logica.js"></script>
+    <script src="js/logica.js?v=<%= System.currentTimeMillis() %>"></script>
 
 </body>
 </html>

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.sql.Date;
 
 public class PedidoBD {
-    private int id;
-    private int idUsuario;
+    private int id, idUsuario, idRepartidor;
     private Date fecha;
-    private double importeTotal;
+    private Direccion origen, destino;
+    private double importeTotal, latitud, longitud;
     private String estado;
     private List<DetallePedidoBD> detalles = new ArrayList<>();
 
@@ -29,4 +29,14 @@ public class PedidoBD {
 
     public List<DetallePedidoBD> getDetalles() { return detalles; }
     public void setDetalles(List<DetallePedidoBD> detalles) { this.detalles = detalles; }
+
+    public Integer getIdRepartidor() { return idRepartidor; }
+    public void setIdRepartidor(Integer idRepartidor) { this.idRepartidor = idRepartidor; }
+
+    public Direccion getOrigen() { return origen; }
+    public void setOrigen(Direccion origen) { this.origen = origen; }
+
+    public Direccion getDestino() { return destino; }
+    public void setDestino(Direccion destino) { this.destino = destino; }
+
 }
