@@ -30,12 +30,12 @@ class Menu extends HTMLElement {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav mx-auto">
-                        <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.jsp">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="empresa.html">Empresa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="productos.html">Productos/Servicios</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
-                        <li class="nav-item"><a class="nav-link" href="carrito.html">🛒 Carrito</a></li>
-                        <li class="nav-item"><a class="nav-link" href="usuario.html">👤 Usuario</a></li>
+                        <li class="nav-item"><a class="nav-link" href="productos.jsp">Productos/Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contacto.jsp">Contacto</a></li>
+                        <li class="nav-item"><a class="nav-link" href="carrito.jsp">🛒 Carrito</a></li>
+                        <li class="nav-item"><a class="nav-link" href="usuario.jsp">👤 Usuario</a></li>
                     </ul>
                 </div>
             </div>

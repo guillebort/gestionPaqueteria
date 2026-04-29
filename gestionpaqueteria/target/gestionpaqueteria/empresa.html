@@ -12,9 +12,7 @@
 <body class="bg-light">
 
     <mi-cabecera></mi-cabecera>
-    <% 
-    String nombreMenu = (String) session.getAttribute("nombreUsuario"); 
-%>
+    
 <mi-menu data-user="<%= (nombreMenu != null) ? nombreMenu : "" %>"></mi-menu>
 
     <main class="container my-5">

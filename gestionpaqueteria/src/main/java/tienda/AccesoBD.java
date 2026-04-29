@@ -557,4 +557,26 @@ public class AccesoBD {
         
         return listaPedidos;
     }
+
+    public boolean asignarRepartidor(int idPedido, int idRepartidor, int nuevoEstado) {
+    abrirConexionBD();
+    boolean actualizado = false;
+    try {
+        // Hacemos el UPDATE en la tabla pedidos[cite: 3]
+        String sql = "UPDATE pedidos SET id_repartidor = ?, estado = ? WHERE id = ?";
+        PreparedStatement s = conexionBD.prepareStatement(sql);
+        s.setInt(1, idRepartidor);
+        s.setInt(2, nuevoEstado);
+        s.setInt(3, idPedido);
+        
+        int filas = s.executeUpdate();
+        if (filas > 0) {
+            actualizado = true;
+        }
+    } catch (Exception e) {
+        System.err.println("Error al asignar el repartidor en la BD");
+        e.printStackTrace();
+    }
+    return actualizado;
+    }
 }
