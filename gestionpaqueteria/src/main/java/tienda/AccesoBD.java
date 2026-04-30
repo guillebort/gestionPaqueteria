@@ -53,7 +53,7 @@ public class AccesoBD {
 		    ResultSet resultado = s.executeQuery();
 		    while(resultado.next()){
 			    ProductoBD producto = new ProductoBD();
-			    producto.setCodigo(resultado.getInt("id"));
+			    producto.setId(resultado.getInt("id"));
 			    producto.setDescripcion(resultado.getString("descripcion"));
 			    producto.setPrecio(resultado.getFloat("precio"));
 			    producto.setExistencias(resultado.getInt("existencias"));
@@ -94,6 +94,26 @@ public class AccesoBD {
 		return codigo;
 	}
 
+    // Método para comprobar si un correo ya existe antes de registrarlo
+    public boolean existeUsuario(String email) {
+        abrirConexionBD();
+        try {
+            String sql = "SELECT id FROM usuarios WHERE usuario = ?";
+            PreparedStatement ps = conexionBD.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            
+            boolean existe = rs.next(); // Si hay un resultado, es true (existe)
+            
+            rs.close();
+            ps.close();
+            return existe;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
 	// Método para encriptar contraseñas en SHA-1
 	private String encriptarSHA1(String clave) {
         try {
@@ -151,7 +171,7 @@ public class AccesoBD {
         ResultSet rs = s.executeQuery();
         if (rs.next()) {
             u = new UsuarioBD();
-            u.setCodigo(rs.getInt("id"));
+            u.setId(rs.getInt("id"));
             u.setUsuario(rs.getString("usuario"));
             u.setNombre(rs.getString("nombre"));
             u.setApellidos(rs.getString("apellidos"));
@@ -267,16 +287,25 @@ public class AccesoBD {
 
         // 4. Insertar el Detalle del pedido (los productos del carrito)
         String sqlDetalle = "INSERT INTO detalle (id_pedido, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
+        String sqlRestarStock = "UPDATE productos SET existencias = existencias - ? WHERE id = ?"; 
+
         PreparedStatement psDetalle = conexionBD.prepareStatement(sqlDetalle);
+        PreparedStatement psStock = conexionBD.prepareStatement(sqlRestarStock);
+        
         for (ProductoCarrito prod : carrito) {
             psDetalle.setInt(1, idPedidoNuevo);
             psDetalle.setInt(2, prod.getCodigo());
             psDetalle.setInt(3, prod.getCantidad());
             psDetalle.setFloat(4, prod.getPrecio());
             psDetalle.executeUpdate();
-        }
 
-        conexionBD.commit(); // SI TODO VA BIEN, GUARDAMOS DEFINITIVAMENTE
+            psStock.setInt(1, prod.getCantidad());
+            psStock.setInt(2, prod.getCodigo()); // El ID del producto
+            psStock.executeUpdate();
+        }
+        psDetalle.close();
+        psStock.close();
+        conexionBD.commit(); 
 
     } catch (Exception e) {
         if (conexionBD != null) {
@@ -422,13 +451,13 @@ public class AccesoBD {
     
     }
 
-    public String obtenerNombreUsuario(int codigo) {
+    public String obtenerNombreUsuario(int id) {
         abrirConexionBD();
         try {
             // Asegúrate de que tu tabla se llama 'usuarios' y la columna 'nombre'
             String sql = "SELECT nombre FROM usuarios WHERE id = ?"; 
             java.sql.PreparedStatement ps = conexionBD.prepareStatement(sql);
-            ps.setInt(1, codigo);
+            ps.setInt(1, id);
             java.sql.ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getString("nombre");

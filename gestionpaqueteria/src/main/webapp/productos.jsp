@@ -52,7 +52,7 @@
                         </ul>
                         
                         <button type="button" class="btn btn-lg btn-block <%= claseBoton %> mt-auto" 
-                            onclick="anadirCarrito(<%= p.getCodigo() %>, '<%= p.getDescripcion().replace("'", "") %>', <%= p.getPrecio() %>, <%= p.getExistencias() %>)">
+                            onclick="anadirCarrito(<%= p.getId() %>, '<%= p.getDescripcion().replace("'", "") %>', <%= p.getPrecio() %>, <%= p.getExistencias() %>)">
                             Añadir al carrito 🛒
                         </button>
                     </div>

@@ -1,7 +1,7 @@
 package tienda;
 public class ProductoBD {
 
-    private int codigo;
+    private int id;
     private String descripcion;
     private double precio;
     private int existencias;
@@ -9,12 +9,12 @@ public class ProductoBD {
     private String caracteristicas;
     private String colorCss;
 
-    public int getCodigo(){
-        return this.codigo;
+    public int getId(){
+        return this.id;
     }
 
-    public void setCodigo(int codigo){
-        this.codigo = codigo;
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getDescripcion(){

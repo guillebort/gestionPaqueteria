@@ -1,11 +1,11 @@
 package tienda;
 
 public class UsuarioBD {
-    private int codigo, rol;
+    private int id, rol;
     private String usuario, nombre, apellidos, domicilio, poblacion, provincia, cp, telefono;
 
-    public int getCodigo() { return codigo; }
-    public void setCodigo(int codigo) { this.codigo = codigo; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getApellidos() { return apellidos; }
